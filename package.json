@@ -1,0 +1,10 @@
+{
+  "name": "fn-apply-views",
+  "version": "1.0.0",
+  "description": "Apply views in order script",
+  "main": "src/main.js",
+  "private": true,
+  "scripts": {
+    "start": "node ."
+  }
+}
