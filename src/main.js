@@ -1,10 +1,15 @@
-const database = require('./database');
+const { applyRequests } = require('./database');
 const { getRequests, sortRequests } = require('./aws');
 
 const main = async () => {
-    let requests = await getRequests();
-    requests = sortRequests(requests);
-    console.log(requests);
+    try {
+        let requests = await getRequests();
+        requests = sortRequests(requests);
+        await applyRequests(requests);
+        console.log('Done');
+    } catch (err) {
+        console.log(err);
+    }
 };
 
 main();
