@@ -6,44 +6,31 @@ const s3 = new AWS.S3({
     region: awsRegion,
 });
 
-const listObjectsV2Async = (params) => {
-    return new Promise((resolve, reject) => {
-        s3.listObjectsV2(params, (err, bucket) => {
-            if (err) return reject(err);
-            resolve(bucket);
-        });
-    });
-}
-
-const getObjectAsync = (params) => {
-    return new Promise((resolve, reject) => {
-        s3.getObject(params, (err, obj) => {
-            if (err) return reject(err);
-            resolve({
-                key: params.Key,
-                body: obj.Body.toString('utf-8'),
-            });
-        });
-    });
-}
-
 const getRequests = async () => {
-    const bucket = await listObjectsV2Async({
+    const bucket = await s3.listObjectsV2({
         Bucket: awsBucketName,
-    });
+    }).promise();
 
-    const requests = await Promise.all(bucket.Contents.map((obj) => {
-        return getObjectAsync({
+    const requests = await Promise.all(bucket.Contents.map(async (obj) => {
+        const objData = await s3.getObject({
             Bucket: bucket.Name,
             Key: obj.Key,
-        });
+        }).promise();
+
+        const [key, ...name] = obj.Key.split("_");
+
+        return {
+            key: parseInt(key),
+            name: name.join('_'),
+            body: objData.Body.toString('utf-8'),
+        };
     }));
     return requests;
-};
+}
 
 const sortRequests = (requests) => {
     return requests.sort((a, b) => {
-        return parseInt(a.key) - parseInt(b.key);
+        return a.key - b.key;
     });
 }
 

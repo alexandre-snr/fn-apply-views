@@ -11,11 +11,11 @@ const applyRequests = async (requests) => {
 
     try {
         for (let i = 0; i < requests.length; i++) {
-            console.log(`Applying request ${requests[i].key}`);
+            console.log(`Applying request ${requests[i].name}`);
             await sequelize.query(requests[i].body, {
                 transaction: tx,
             });
-            console.log(`Done ${requests[i].key}`);
+            console.log(`Done ${requests[i].name}`);
         }
         await tx.commit();
     } catch (err) {
